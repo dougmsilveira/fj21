@@ -2,6 +2,7 @@ package br.com.caelum.agenda.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Connection;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -18,52 +19,55 @@ import br.com.caelum.agenda.dao.ContatoDao;
 import br.com.caelum.agenda.modelo.Contato;
 
 @WebServlet("/adicionaContato")
-public class AdicionaContatoServlet extends HttpServlet{
+public class AdicionaContatoServlet extends HttpServlet {
 	@Override
-	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		//busca o writter
+	protected void service(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		// busca o writter
 		PrintWriter out = response.getWriter();
-		
-		//buscando os parametros no request
+
+		// buscando os parametros no request
 		String nome = request.getParameter("nome");
 		String endereco = request.getParameter("endereco");
 		String email = request.getParameter("email");
 		String dataEmTexto = request.getParameter("dataNascimento");
 		Calendar dataNascimento = null;
-		
-		//fazendo a conversao da data
+
+		// fazendo a conversao da data
 		try {
 			Date date = new SimpleDateFormat("dd/MM/yyyy").parse(dataEmTexto);
 			dataNascimento = Calendar.getInstance();
 			dataNascimento.setTime(date);
 		} catch (ParseException e) {
 			out.println("Erro na conversao da data");
-			return; //para execucao do metodo
+			return; // para execucao do metodo
 		}
-		
-		//monta um objeto contato
+
+		// monta um objeto contato
 		Contato contato = new Contato();
 		contato.setNome(nome);
 		contato.setEndereco(endereco);
 		contato.setEmail(email);
 		contato.setDataNascimento(dataNascimento);
+
+		// busca a conexao pendurada na conexao
+		Connection connection = (Connection) request.getAttribute("conexao");
 		
-		//salva contato
-		ContatoDao dao = new ContatoDao();
+		// salva contato
+		ContatoDao dao = new ContatoDao(connection);
 		dao.adiciona(contato);
-		
-		//imprime o nome do contato que foi adicionado
-		
+
+		// imprime o nome do contato que foi adicionado
+
 		RequestDispatcher rd = request.getRequestDispatcher("/contato-adicionado.jsp");
 		rd.forward(request, response);
-		
+
 		/*
-		out.println("<html>");
-		out.println("<body>");
-		out.println("Contato " + contato.getNome() + " adicionado com sucesso");
-		out.println("</body>");
-		out.println("</html>");*/
-		
+		 * out.println("<html>"); out.println("<body>"); out.println("Contato "
+		 * + contato.getNome() + " adicionado com sucesso");
+		 * out.println("</body>"); out.println("</html>");
+		 */
+
 	}
 
 }

@@ -13,7 +13,7 @@
 	<c:import url="cabecalho.jsp" />
 	<h1>Adiciona Contatos</h1>
 	<hr />
-	<form action="adicionaContato">
+	<form action="mvc?logica=AdicionaContatoLogic" method="post">
 		Nome: <input type="text" name="nome" /> <br /> E-mail: <input
 			type="text" name="email" /> <br /> Endereco: <input type="text"
 			name="endereco" /> <br /> Data Nascimento: <caelum:campoData id="dataNascimento" /> 
